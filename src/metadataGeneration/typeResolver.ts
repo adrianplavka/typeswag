@@ -1,12 +1,10 @@
-import * as indexOf from 'lodash.indexof';
-import * as map from 'lodash.map';
 import * as ts from 'typescript';
 import { getJSDocComment, getJSDocTagNames, isExistJSDocTag } from './../utils/jsDocUtils';
 import { getPropertyValidators } from './../utils/validatorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { getInitializerValue } from './initializer-value';
 import { MetadataGenerator } from './metadataGenerator';
-import { Tsoa } from './tsoa';
+import { Typeswag } from './typeswag';
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = 'number';
@@ -14,7 +12,7 @@ syntaxKindMap[ts.SyntaxKind.StringKeyword] = 'string';
 syntaxKindMap[ts.SyntaxKind.BooleanKeyword] = 'boolean';
 syntaxKindMap[ts.SyntaxKind.VoidKeyword] = 'void';
 
-const localReferenceTypeCache: { [typeName: string]: Tsoa.ReferenceType } = {};
+const localReferenceTypeCache: { [typeName: string]: Typeswag.ReferenceType } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
 type UsableDeclaration = ts.InterfaceDeclaration
@@ -29,7 +27,7 @@ export class TypeResolver {
     private readonly extractEnum = true,
   ) { }
 
-  public resolve(): Tsoa.Type {
+  public resolve(): Typeswag.Type {
     const primitiveType = this.getPrimitiveType(this.typeNode, this.parentNode);
     if (primitiveType) {
       return primitiveType;
@@ -39,7 +37,7 @@ export class TypeResolver {
       return {
         dataType: 'array',
         elementType: new TypeResolver((this.typeNode as ts.ArrayTypeNode).elementType, this.current).resolve(),
-      } as Tsoa.ArrayType;
+      } as Typeswag.ArrayType;
     }
 
     if (this.typeNode.kind === ts.SyntaxKind.UnionType) {
@@ -56,18 +54,18 @@ export class TypeResolver {
               default: return String((literalType as any).text);
             }
           }),
-        } as Tsoa.EnumerateType;
+        } as Typeswag.EnumerateType;
       } else {
-        return { dataType: 'object' } as Tsoa.Type;
+        return { dataType: 'object' } as Typeswag.Type;
       }
     }
 
     if (this.typeNode.kind === ts.SyntaxKind.AnyKeyword) {
-      return { dataType: 'any' } as Tsoa.Type;
+      return { dataType: 'any' } as Typeswag.Type;
     }
 
     if (this.typeNode.kind === ts.SyntaxKind.TypeLiteral) {
-      return { dataType: 'any' } as Tsoa.Type;
+      return { dataType: 'any' } as Typeswag.Type;
     }
 
     if (this.typeNode.kind !== ts.SyntaxKind.TypeReference) {
@@ -81,14 +79,14 @@ export class TypeResolver {
       }
 
       if (typeReference.typeName.text === 'Buffer') {
-        return { dataType: 'buffer' } as Tsoa.Type;
+        return { dataType: 'buffer' } as Typeswag.Type;
       }
 
       if (typeReference.typeName.text === 'Array' && typeReference.typeArguments && typeReference.typeArguments.length === 1) {
         return {
           dataType: 'array',
           elementType: new TypeResolver(typeReference.typeArguments[0], this.current).resolve(),
-        } as Tsoa.ArrayType;
+        } as Typeswag.ArrayType;
       }
 
       if (typeReference.typeName.text === 'Promise' && typeReference.typeArguments && typeReference.typeArguments.length === 1) {
@@ -96,7 +94,7 @@ export class TypeResolver {
       }
 
       if (typeReference.typeName.text === 'String') {
-        return { dataType: 'string' } as Tsoa.Type;
+        return { dataType: 'string' } as Typeswag.Type;
       }
     }
 
@@ -108,7 +106,7 @@ export class TypeResolver {
     const literalType = this.getLiteralType(typeReference.typeName);
     if (literalType) { return literalType; }
 
-    let referenceType: Tsoa.ReferenceType;
+    let referenceType: Typeswag.ReferenceType;
     if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
       const typeT: ts.NodeArray<ts.TypeNode> = typeReference.typeArguments as ts.NodeArray<ts.TypeNode>;
       referenceType = this.getReferenceType(typeReference.typeName as ts.EntityName, this.extractEnum, typeT);
@@ -120,7 +118,7 @@ export class TypeResolver {
     return referenceType;
   }
 
-  private getPrimitiveType(typeNode: ts.TypeNode, parentNode?: ts.Node): Tsoa.Type | undefined {
+  private getPrimitiveType(typeNode: ts.TypeNode, parentNode?: ts.Node): Typeswag.Type | undefined {
     const primitiveType = syntaxKindMap[typeNode.kind];
     if (!primitiveType) { return; }
 
@@ -149,10 +147,10 @@ export class TypeResolver {
           return { dataType: 'double' };
       }
     }
-    return { dataType: primitiveType } as Tsoa.Type;
+    return { dataType: primitiveType } as Typeswag.Type;
   }
 
-  private getDateType(parentNode?: ts.Node): Tsoa.Type {
+  private getDateType(parentNode?: ts.Node): Typeswag.Type {
     if (!parentNode) {
       return { dataType: 'datetime' };
     }
@@ -173,7 +171,7 @@ export class TypeResolver {
     }
   }
 
-  private getEnumerateType(typeName: ts.EntityName, extractEnum = true): Tsoa.Type | undefined {
+  private getEnumerateType(typeName: ts.EntityName, extractEnum = true): Typeswag.Type | undefined {
     const enumName = (typeName as ts.Identifier).text;
     const enumNodes = this.current.nodes
       .filter((node) => node.kind === ts.SyntaxKind.EnumDeclaration)
@@ -206,18 +204,18 @@ export class TypeResolver {
         description: this.getNodeDescription(enumDeclaration),
         enums,
         refName: enumName,
-      } as Tsoa.ReferenceType;
+      } as Typeswag.ReferenceType;
     } else {
       return {
         dataType: 'enum',
         enums: enumDeclaration.members.map((member: any, index) => {
           return getEnumValue(member) || String(index);
         }),
-      } as Tsoa.EnumerateType;
+      } as Typeswag.EnumerateType;
     }
   }
 
-  private getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | undefined {
+  private getLiteralType(typeName: ts.EntityName): Typeswag.EnumerateType | undefined {
     const literalName = (typeName as ts.Identifier).text;
     const literalTypes = this.current.nodes
       .filter((node) => node.kind === ts.SyntaxKind.TypeAliasDeclaration)
@@ -236,10 +234,10 @@ export class TypeResolver {
     return {
       dataType: 'enum',
       enums: unionTypes.map((unionNode: any) => unionNode.literal.text as string),
-    } as Tsoa.EnumerateType;
+    } as Typeswag.EnumerateType;
   }
 
-  private getReferenceType(type: ts.EntityName, extractEnum = true, genericTypes?: ts.NodeArray<ts.TypeNode>): Tsoa.ReferenceType {
+  private getReferenceType(type: ts.EntityName, extractEnum = true, genericTypes?: ts.NodeArray<ts.TypeNode>): Typeswag.ReferenceType {
     const typeName = this.resolveFqTypeName(type);
     const refNameWithGenerics = this.getTypeName(typeName, genericTypes);
 
@@ -249,7 +247,7 @@ export class TypeResolver {
         return existingType;
       }
 
-      const referenceEnumType = this.getEnumerateType(type, true) as Tsoa.ReferenceType;
+      const referenceEnumType = this.getEnumerateType(type, true) as Typeswag.ReferenceType;
       if (referenceEnumType) {
         localReferenceTypeCache[refNameWithGenerics] = referenceEnumType;
         return referenceEnumType;
@@ -273,9 +271,9 @@ export class TypeResolver {
         description: this.getNodeDescription(modelType),
         properties: inheritedProperties,
         refName: refNameWithGenerics,
-      } as Tsoa.ReferenceType;
+      } as Typeswag.ReferenceType;
 
-      referenceType.properties = (referenceType.properties as Tsoa.Property[]).concat(properties);
+      referenceType.properties = (referenceType.properties as Typeswag.Property[]).concat(properties);
       localReferenceTypeCache[refNameWithGenerics] = referenceType;
 
       if (example) {
@@ -338,7 +336,7 @@ export class TypeResolver {
     const referenceType = {
       dataType: 'refObject',
       refName,
-    } as Tsoa.ReferenceType;
+    } as Typeswag.ReferenceType;
 
     this.current.OnFinish((referenceTypes) => {
       const realReferenceType = referenceTypes[refName];
@@ -437,16 +435,16 @@ export class TypeResolver {
       });
 
       /**
-       * Model is marked with '@tsoaModel', indicating that it should be the 'canonical' model used
+       * Model is marked with '@typeswagModel', indicating that it should be the 'canonical' model used
        */
       const designatedModels = modelTypes.filter(modelType => {
-        const isDesignatedModel = isExistJSDocTag(modelType, tag => tag.tagName.text === 'tsoaModel');
+        const isDesignatedModel = isExistJSDocTag(modelType, tag => tag.tagName.text === 'typeswagModel');
         return isDesignatedModel;
       });
 
       if (designatedModels.length > 0) {
         if (designatedModels.length > 1) {
-          throw new GenerateMetadataError(`Multiple models for ${typeName} marked with '@tsoaModel'; '@tsoaModel' should only be applied to one model.`);
+          throw new GenerateMetadataError(`Multiple models for ${typeName} marked with '@typeswagModel'; '@typeswagModel' should only be applied to one model.`);
         }
 
         modelTypes = designatedModels;
@@ -460,7 +458,7 @@ export class TypeResolver {
     return modelTypes[0];
   }
 
-  private getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray<ts.TypeNode>): Tsoa.Property[] {
+  private getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray<ts.TypeNode>): Typeswag.Property[] {
     const isIgnored = (e: ts.TypeElement | ts.ClassElement) => {
       const ignore = isExistJSDocTag(e, tag => tag.tagName.text === 'ignore');
       return ignore;
@@ -489,9 +487,7 @@ export class TypeResolver {
           if (aType.kind === ts.SyntaxKind.TypeReference && genericTypes && genericTypes.length && node.typeParameters) {
 
             // The type definitions are conviently located on the object which allow us to map -> to the genericTypes
-            const typeParams = map(node.typeParameters, (typeParam: ts.TypeParameterDeclaration) => {
-              return typeParam.name.text;
-            });
+            const typeParams = node.typeParameters.map((typeParam: ts.TypeParameterDeclaration) => typeParam.name.text);
 
             // I am not sure in what cases
             const typeIdentifier = (aType as ts.TypeReferenceNode).typeName;
@@ -505,7 +501,7 @@ export class TypeResolver {
             }
 
             // I could not produce a situation where this did not find it so its possible this check is irrelevant
-            const indexOfType = indexOf(typeParams, typeIdentifierName);
+            const indexOfType = typeParams.indexOf(typeIdentifierName);
             if (indexOfType >= 0) {
               aType = genericTypes[indexOfType] as ts.TypeNode;
             }
@@ -519,14 +515,14 @@ export class TypeResolver {
             required: !propertyDeclaration.questionToken,
             type: new TypeResolver(aType, this.current, aType.parent).resolve(),
             validators: getPropertyValidators(propertyDeclaration),
-          } as Tsoa.Property;
+          } as Typeswag.Property;
         });
     }
 
     // Type alias model
     if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
       const aliasDeclaration = node as ts.TypeAliasDeclaration;
-      const properties: Tsoa.Property[] = [];
+      const properties: Typeswag.Property[] = [];
 
       if (aliasDeclaration.type.kind === ts.SyntaxKind.IntersectionType) {
         const intersectionTypeNode = aliasDeclaration.type as ts.IntersectionTypeNode;
@@ -595,7 +591,7 @@ export class TypeResolver {
           required: !property.questionToken && !property.initializer,
           type,
           validators: getPropertyValidators(property as ts.PropertyDeclaration),
-        } as Tsoa.Property;
+        } as Typeswag.Property;
       });
   }
 
@@ -621,8 +617,8 @@ export class TypeResolver {
     return undefined;
   }
 
-  private getModelInheritedProperties(modelTypeDeclaration: UsableDeclaration): Tsoa.Property[] {
-    const properties = [] as Tsoa.Property[];
+  private getModelInheritedProperties(modelTypeDeclaration: UsableDeclaration): Typeswag.Property[] {
+    const properties = [] as Typeswag.Property[];
     if (modelTypeDeclaration.kind === ts.SyntaxKind.TypeAliasDeclaration) {
       return [];
     }

@@ -2,9 +2,16 @@ import * as ts from 'typescript';
 import * as YAML from 'yamljs';
 import { SwaggerConfig } from '../config';
 import { MetadataGenerator } from '../metadataGeneration/metadataGenerator';
-import { Tsoa } from '../metadataGeneration/tsoa';
+import { Typeswag } from '../metadataGeneration/typeswag';
 import { SpecGenerator } from '../swagger/specGenerator';
 import { fsExists, fsMkDir, fsWriteFile } from '../utils/fs';
+import { registeredDecorators } from './customDecorators';
+
+export const registerRouteDecorator = (decorator: (path?: string) => any, callback?: (path: string) => string) => {
+  registeredDecorators.routes[decorator.name] = {
+    callback,
+  };
+};
 
 export const generateSwaggerSpec = async (
   config: SwaggerConfig,
@@ -13,11 +20,12 @@ export const generateSwaggerSpec = async (
   /**
    * pass in cached metadata returned in a previous step to speed things up
    */
-  metadata?: Tsoa.Metadata,
+  metadata?: Typeswag.Metadata,
 ) => {
   if (!metadata) {
     metadata = new MetadataGenerator(
       config.entryFile,
+      registeredDecorators,
       compilerOptions,
       ignorePaths,
     ).Generate();

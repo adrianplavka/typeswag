@@ -8,11 +8,6 @@ export interface Config {
   swagger: SwaggerConfig;
 
   /**
-   * Route generation configuration object
-   */
-  routes: RoutesConfig;
-
-  /**
    * Directories to ignore during TypeScript metadata scan
    */
   ignore?: string[];
@@ -101,41 +96,4 @@ export interface SwaggerConfig {
   yaml?: boolean;
 
   schemes?: Swagger.Protocol[];
-}
-
-export interface RoutesConfig {
-  /**
-   * Routes directory; generated routes.ts (which contains the generated code wiring up routes using middleware of choice) will be dropped here
-   */
-  routesDir: string;
-
-  /**
-   * The entry point to your API
-   */
-  entryFile: string;
-
-  /**
-   * Base API path; e.g. the '/v1' in https://myapi.com/v1
-   */
-  basePath?: string;
-
-  /**
-   * Middleware provider.
-   */
-  middleware?: 'express' | 'hapi' | 'koa';
-
-  /**
-   * Override the Middleware template
-   */
-  middlewareTemplate?: string;
-
-  /**
-   * IOC module; e.g. './inversify/ioc' where IOC container named `iocContainer` is defined (https://github.com/inversify/InversifyJS)
-   */
-  iocModule?: string;
-
-  /**
-   * Authentication Module for express, hapi and koa
-   */
-  authenticationModule?: string;
 }

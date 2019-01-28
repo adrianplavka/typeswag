@@ -4,8 +4,8 @@ import { getParameterValidators } from './../utils/validatorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { getInitializerValue } from './initializer-value';
 import { MetadataGenerator } from './metadataGenerator';
-import { Tsoa } from './tsoa';
 import { TypeResolver } from './typeResolver';
+import { Typeswag } from './typeswag';
 
 export class ParameterGenerator {
   constructor(
@@ -15,8 +15,8 @@ export class ParameterGenerator {
     private readonly current: MetadataGenerator,
   ) { }
 
-  public Generate(): Tsoa.Parameter {
-    const decoratorName = getDecoratorName(this.parameter, (identifier) => this.supportParameterDecorator(identifier.text));
+  public Generate(): Typeswag.Parameter | null {
+    const decoratorName = getDecoratorName(this.parameter, (_) => true);
 
     switch (decoratorName) {
       case 'Request':
@@ -32,11 +32,14 @@ export class ParameterGenerator {
       case 'Path':
         return this.getPathParameter(this.parameter);
       default:
+        if (decoratorName) {
+          return null;
+        }
         return this.getPathParameter(this.parameter);
     }
   }
 
-  private getRequestParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getRequestParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     return {
       description: this.getParameterDescription(parameter),
@@ -49,7 +52,7 @@ export class ParameterGenerator {
     };
   }
 
-  private getBodyPropParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getBodyPropParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     const type = this.getValidatedType(parameter);
 
@@ -69,7 +72,7 @@ export class ParameterGenerator {
     };
   }
 
-  private getBodyParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getBodyParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     const type = this.getValidatedType(parameter);
 
@@ -88,7 +91,7 @@ export class ParameterGenerator {
     };
   }
 
-  private getHeaderParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getHeaderParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     const type = this.getValidatedType(parameter, false);
 
@@ -108,7 +111,7 @@ export class ParameterGenerator {
     };
   }
 
-  private getQueryParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getQueryParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     const type = this.getValidatedType(parameter, false);
 
@@ -123,7 +126,7 @@ export class ParameterGenerator {
     };
 
     if (type.dataType === 'array') {
-      const arrayType = type as Tsoa.ArrayType;
+      const arrayType = type as Typeswag.ArrayType;
       if (!this.supportPathDataType(arrayType.elementType)) {
         throw new GenerateMetadataError(`@Query('${parameterName}') Can't support array '${arrayType.elementType.dataType}' type.`);
       }
@@ -131,7 +134,7 @@ export class ParameterGenerator {
         ...commonProperties,
         collectionFormat: 'multi',
         type: arrayType,
-      } as Tsoa.ArrayParameter;
+      } as Typeswag.ArrayParameter;
     }
 
     if (!this.supportPathDataType(type)) {
@@ -144,7 +147,7 @@ export class ParameterGenerator {
     };
   }
 
-  private getPathParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+  private getPathParameter(parameter: ts.ParameterDeclaration): Typeswag.Parameter {
     const parameterName = (parameter.name as ts.Identifier).text;
     const type = this.getValidatedType(parameter, false);
     const pathName = getDecoratorTextValue(this.parameter, (ident) => ident.text === 'Path') || parameterName;
@@ -182,11 +185,14 @@ export class ParameterGenerator {
     return ['post', 'put', 'patch'].some((m) => m === method.toLowerCase());
   }
 
+  /* This has been disabled, to support custom parameter decorators.
+
   private supportParameterDecorator(decoratorName: string) {
     return ['header', 'query', 'parem', 'body', 'bodyprop', 'request'].some((d) => d === decoratorName.toLocaleLowerCase());
   }
+  */
 
-  private supportPathDataType(parameterType: Tsoa.Type) {
+  private supportPathDataType(parameterType: Typeswag.Type) {
     return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum', 'any'].find((t) => t === parameterType.dataType);
   }
 

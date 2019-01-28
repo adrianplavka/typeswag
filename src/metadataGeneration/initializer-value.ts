@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import { Tsoa } from './tsoa';
+import { Typeswag } from './typeswag';
 
-export const getInitializerValue = (initializer?: ts.Expression, type?: Tsoa.Type) => {
+export const getInitializerValue = (initializer?: ts.Expression, type?: Typeswag.Type) => {
   if (!initializer) { return; }
 
   switch (initializer.kind as ts.SyntaxKind) {

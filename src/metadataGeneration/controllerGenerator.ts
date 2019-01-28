@@ -1,19 +1,21 @@
 import * as ts from 'typescript';
-import { getDecorators } from './../utils/decoratorUtils';
+import { CustomRouteDecorator } from '../module/customDecorators';
+import { getDecorators, getOnlyDecoratorName } from './../utils/decoratorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { MetadataGenerator } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';
 import { getSecurities } from './security';
-import { Tsoa } from './tsoa';
+import { Typeswag } from './typeswag';
 
 export class ControllerGenerator {
   private readonly path?: string;
   private readonly tags?: string[];
-  private readonly security?: Tsoa.Security[];
+  private readonly security?: Typeswag.Security[];
 
   constructor(
     private readonly node: ts.ClassDeclaration,
     private readonly current: MetadataGenerator,
+    private readonly customRouteDecorators?: CustomRouteDecorator,
     ) {
     this.path = this.getPath();
     this.tags = this.getTags();
@@ -24,7 +26,7 @@ export class ControllerGenerator {
     return !!this.path || this.path === '';
   }
 
-  public Generate(): Tsoa.Controller {
+  public Generate(): Typeswag.Controller {
     if (!this.node.parent) {
       throw new GenerateMetadataError('Controller node doesn\'t have a valid parent source file.');
     }
@@ -51,18 +53,24 @@ export class ControllerGenerator {
   }
 
   private getPath() {
-    const decorators = getDecorators(this.node, (identifier) => identifier.text === 'Route');
+    const decorators = getDecorators(this.node, (identifier) => this.supportRouteDecorator(identifier.text));
     if (!decorators || !decorators.length) {
       return;
     }
     if (decorators.length > 1) {
-      throw new GenerateMetadataError(`Only one Route decorator allowed in '${this.node.name!.text}' class.`);
+      throw new GenerateMetadataError(`Only one Route type decorator allowed in '${this.node.name!.text}' class.`);
     }
 
     const decorator = decorators[0];
     const expression = decorator.parent as ts.CallExpression;
     const decoratorArgument = expression.arguments[0] as ts.StringLiteral;
-    return decoratorArgument ? `${decoratorArgument.text}` : '';
+    const decoratorName = getOnlyDecoratorName(this.node);
+    let path = decoratorArgument ? `${decoratorArgument.text}` : '';
+
+    if (decoratorName && this.customRouteDecorators && this.customRouteDecorators[decoratorName] && this.customRouteDecorators[decoratorName].callback) {
+      path = (this.customRouteDecorators[decoratorName].callback as any)(path);
+    }
+    return path;
   }
 
   private getTags() {
@@ -80,12 +88,24 @@ export class ControllerGenerator {
     return expression.arguments.map((a: any) => a.text as string);
   }
 
-  private getSecurity(): Tsoa.Security[] {
+  private getSecurity(): Typeswag.Security[] {
     const securityDecorators = getDecorators(this.node, (identifier) => identifier.text === 'Security');
     if (!securityDecorators || !securityDecorators.length) {
       return [];
     }
 
     return getSecurities(securityDecorators);
+  }
+
+  private supportRouteDecorator(decoratorName: string) {
+    const supportedDecorators = ['route'];
+
+    if (this.customRouteDecorators) {
+      for (const customDecorator of Object.keys(this.customRouteDecorators)) {
+        supportedDecorators.push(customDecorator.toLocaleLowerCase());
+      }
+    }
+
+    return supportedDecorators.some((d) => d === decoratorName.toLocaleLowerCase());
   }
 }

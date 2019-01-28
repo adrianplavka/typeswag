@@ -1,44 +1,39 @@
 {
-  "name": "tsoa",
-  "description": "Build swagger-compliant REST APIs using TypeScript and Node",
-  "version": "2.3.8",
+  "name": "typeswag",
+  "description": "Build swagger-compliant REST APIs using custom self-describing decorators with TypeScript and Node",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "keywords": [
     "typescript",
     "swagger",
+    "openapi",
     "server",
     "node",
     "node.js",
     "codegen",
-    "generation",
-    "express",
-    "hapi.js",
-    "koa"
+    "generation"
   ],
   "scripts": {
     "start": "tsc -w",
-    "build": "npm run clean && npm run tsc && npm run copy-templates && npm run copy-types",
+    "build": "npm run clean && npm run tsc && npm run copy-types",
     "copy-types": "copyfiles -u 1 ./src/*.d.ts ./dist",
-    "copy-templates": "copyfiles -u 1 ./src/routeGeneration/templates/**/* ./dist",
-    "clean": "rimraf dist && rimraf tests/fixtures/*/routes.ts",
+    "clean": "rimraf dist",
     "lint": "tslint --exclude ./node_modules/** ./src/**/*.ts ./tests/**/*.ts",
     "format": "tsfmt -r",
     "prepare": "npm run build",
     "deploy": "npm version patch -m \"Release v%s\" && npm publish",
     "preversion": "npm test",
     "postversion": "git push origin master && git push --follow-tags",
-    "pretest": "cross-env NODE_ENV=tsoa_test ts-node ./tests/prepare.ts",
-    "test": "cross-env NODE_ENV=tsoa_test mocha **/*.spec.ts --exit --compilers ts:ts-node/register",
+    "test": "cross-env NODE_ENV=test mocha **/*.spec.ts --exit --compilers ts:ts-node/register",
+    "test:watch": "cross-env NODE_ENV=test mocha **/*.spec.ts --exit --compilers ts:ts-node/register --watch --recursive",
     "tsc": "tsc"
   },
-  "author": "Luke Autry <lukeautry@gmail.com> (http://www.lukeautry.com)",
+  "author": "Adrian Plavka <adrian.plavka@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^7.0.1",
     "handlebars": "^4.0.11",
-    "lodash.indexof": "^4.0.5",
-    "lodash.map": "^4.6.0",
     "merge": "^1.2.1",
     "minimatch": "^3.0.4",
     "moment": "^2.22.1",
@@ -51,12 +46,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
     "@types/chai": "^3.5.2",
-    "@types/express": "^4.16.0",
     "@types/handlebars": "^4.0.37",
-    "@types/hapi": "^17.6.1",
-    "@types/koa": "^2.0.45",
-    "@types/koa-bodyparser": "^3.0.26",
-    "@types/koa-router": "^7.0.28",
     "@types/method-override": "^0.0.29",
     "@types/mime": "^1.3.1",
     "@types/minimatch": "^3.0.3",
@@ -73,12 +63,7 @@
     "chalk": "^2.4.1",
     "copyfiles": "^1.2.0",
     "cross-env": "^5.1.6",
-    "express": "^4.16.3",
-    "hapi": "^17.0.19",
     "inversify": "^4.13.0",
-    "koa": "^2.5.1",
-    "koa-bodyparser": "^4.2.1",
-    "koa-router": "^7.4.0",
     "method-override": "^2.3.10",
     "mocha": "^5.2.0",
     "reflect-metadata": "^0.1.12",
@@ -89,10 +74,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukeautry/tsoa.git"
-  },
-  "bin": {
-    "tsoa": "dist/cli.js"
+    "url": "https://github.com/adrianplavka/typeswag.git"
   },
   "engines": {
     "node": ">=6.0.0"

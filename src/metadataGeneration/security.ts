@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
 import { getInitializerValue } from './initializer-value';
-import { Tsoa } from './tsoa';
+import { Typeswag } from './typeswag';
 
-export function getSecurities(decorators: ts.Identifier[]): Tsoa.Security[] {
-  const securities: Tsoa.Security[] = [];
+export function getSecurities(decorators: ts.Identifier[]): Typeswag.Security[] {
+  const securities: Typeswag.Security[] = [];
   for (const sec of decorators) {
     const expression = sec.parent as ts.CallExpression;
-    const security: Tsoa.Security = {};
+    const security: Typeswag.Security = {};
 
     if (expression.arguments[0].kind === ts.SyntaxKind.StringLiteral) {
       const name = (expression.arguments[0] as any).text;

@@ -1,10 +1,10 @@
 import * as moment from 'moment';
 import * as ts from 'typescript';
+import { Typeswag } from '../metadataGeneration/typeswag';
 import { GenerateMetadataError } from './../metadataGeneration/exceptions';
-import { Tsoa } from './../metadataGeneration/tsoa';
 import { getJSDocTags } from './jsDocUtils';
 
-export function getParameterValidators(parameter: ts.ParameterDeclaration, parameterName): Tsoa.Validators {
+export function getParameterValidators(parameter: ts.ParameterDeclaration, parameterName): Typeswag.Validators {
     if (!parameter.parent) { return {}; }
 
     const tags = getJSDocTags(parameter.parent, tag => {
@@ -92,10 +92,10 @@ export function getParameterValidators(parameter: ts.ParameterDeclaration, param
                 break;
         }
         return validateObj;
-    }, {} as Tsoa.Validators);
+    }, {} as Typeswag.Validators);
 }
 
-export function getPropertyValidators(property: ts.PropertyDeclaration): Tsoa.Validators | undefined {
+export function getPropertyValidators(property: ts.PropertyDeclaration): Typeswag.Validators | undefined {
     const tags = getJSDocTags(property, (tag) => {
         return getParameterTagSupport().some(value => value === tag.tagName.text);
     });
@@ -175,7 +175,7 @@ export function getPropertyValidators(property: ts.PropertyDeclaration): Tsoa.Va
                 break;
         }
         return validateObj;
-    }, {} as Tsoa.Validators);
+    }, {} as Typeswag.Validators);
 }
 
 function getParameterTagSupport() {

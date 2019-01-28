@@ -1,10 +1,10 @@
-import { Tsoa } from '../metadataGeneration/tsoa';
+import { Typeswag } from '../metadataGeneration/typeswag';
 import { SwaggerConfig } from './../config';
 import { normalisePath } from './../utils/pathUtils';
 import { Swagger } from './swagger';
 
 export class SpecGenerator {
-  constructor(private readonly metadata: Tsoa.Metadata, private readonly config: SwaggerConfig) { }
+  constructor(private readonly metadata: Typeswag.Metadata, private readonly config: SwaggerConfig) { }
 
   public GetSpec() {
     let spec: Swagger.Spec = {
@@ -97,7 +97,7 @@ export class SpecGenerator {
     return paths;
   }
 
-  private buildMethod(controllerName: string, method: Tsoa.Method, pathObject: any) {
+  private buildMethod(controllerName: string, method: Typeswag.Method, pathObject: any) {
     const pathMethod: Swagger.Operation = pathObject[method.method] = this.buildOperation(controllerName, method);
     pathMethod.description = method.description;
     pathMethod.summary = method.summary;
@@ -129,7 +129,7 @@ export class SpecGenerator {
     }
   }
 
-  private buildBodyPropParameter(controllerName: string, method: Tsoa.Method) {
+  private buildBodyPropParameter(controllerName: string, method: Typeswag.Method) {
     const properties = {} as { [name: string]: Swagger.Schema };
     const required: string[] = [];
 
@@ -162,7 +162,7 @@ export class SpecGenerator {
     return parameter;
   }
 
-  private buildParameter(source: Tsoa.Parameter): Swagger.Parameter {
+  private buildParameter(source: Typeswag.Parameter): Swagger.Parameter {
     let parameter = {
       default: source.default,
       description: source.description,
@@ -220,7 +220,7 @@ export class SpecGenerator {
     return parameter;
   }
 
-  private buildProperties(source: Tsoa.Property[]) {
+  private buildProperties(source: Typeswag.Property[]) {
     const properties: { [propertyName: string]: Swagger.Schema } = {};
 
     source.forEach(property => {
@@ -250,14 +250,14 @@ export class SpecGenerator {
     return properties;
   }
 
-  private buildAdditionalProperties(type: Tsoa.Type) {
+  private buildAdditionalProperties(type: Typeswag.Type) {
     return this.getSwaggerType(type);
   }
 
-  private buildOperation(controllerName: string, method: Tsoa.Method): Swagger.Operation {
+  private buildOperation(controllerName: string, method: Typeswag.Method): Swagger.Operation {
     const swaggerResponses: any = {};
 
-    method.responses.forEach((res: Tsoa.Response) => {
+    method.responses.forEach((res: Typeswag.Response) => {
       swaggerResponses[res.name] = {
         description: res.description,
       };
@@ -280,24 +280,24 @@ export class SpecGenerator {
     return methodName.charAt(0).toUpperCase() + methodName.substr(1);
   }
 
-  private getSwaggerType(type: Tsoa.Type): Swagger.Schema {
+  private getSwaggerType(type: Typeswag.Type): Swagger.Schema {
     const swaggerType = this.getSwaggerTypeForPrimitiveType(type);
     if (swaggerType) {
       return swaggerType;
     }
 
     if (type.dataType === 'array') {
-      return this.getSwaggerTypeForArrayType(type as Tsoa.ArrayType);
+      return this.getSwaggerTypeForArrayType(type as Typeswag.ArrayType);
     }
 
     if (type.dataType === 'enum') {
-      return this.getSwaggerTypeForEnumType(type as Tsoa.EnumerateType);
+      return this.getSwaggerTypeForEnumType(type as Typeswag.EnumerateType);
     }
 
-    return this.getSwaggerTypeForReferenceType(type as Tsoa.ReferenceType) as Swagger.Schema;
+    return this.getSwaggerTypeForReferenceType(type as Typeswag.ReferenceType) as Swagger.Schema;
   }
 
-  private getSwaggerTypeForPrimitiveType(type: Tsoa.Type): Swagger.Schema | undefined {
+  private getSwaggerTypeForPrimitiveType(type: Typeswag.Type): Swagger.Schema | undefined {
     const map = {
       any: { type: 'object' },
       binary: { type: 'string', format: 'binary' },
@@ -317,15 +317,15 @@ export class SpecGenerator {
     return map[type.dataType];
   }
 
-  private getSwaggerTypeForArrayType(arrayType: Tsoa.ArrayType): Swagger.Schema {
+  private getSwaggerTypeForArrayType(arrayType: Typeswag.ArrayType): Swagger.Schema {
     return { type: 'array', items: this.getSwaggerType(arrayType.elementType) };
   }
 
-  private getSwaggerTypeForEnumType(enumType: Tsoa.EnumerateType): Swagger.Schema {
+  private getSwaggerTypeForEnumType(enumType: Typeswag.EnumerateType): Swagger.Schema {
     return { type: 'string', enum: enumType.enums.map(member => String(member)) };
   }
 
-  private getSwaggerTypeForReferenceType(referenceType: Tsoa.ReferenceType): Swagger.BaseSchema {
+  private getSwaggerTypeForReferenceType(referenceType: Typeswag.ReferenceType): Swagger.BaseSchema {
     return { $ref: `#/definitions/${referenceType.refName}` };
   }
 }

@@ -6,8 +6,8 @@ import { getInitializerValue } from './initializer-value';
 import { MetadataGenerator } from './metadataGenerator';
 import { ParameterGenerator } from './parameterGenerator';
 import { getSecurities } from './security';
-import { Tsoa } from './tsoa';
 import { TypeResolver } from './typeResolver';
+import { Typeswag } from './typeswag';
 
 export class MethodGenerator {
   private method: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head';
@@ -17,7 +17,7 @@ export class MethodGenerator {
     private readonly node: ts.MethodDeclaration,
     private readonly current: MetadataGenerator,
     private readonly parentTags?: string[],
-    private readonly parentSecurity?: Tsoa.Security[],
+    private readonly parentSecurity?: Typeswag.Security[],
     ) {
     this.processMethodDecorators();
   }
@@ -26,7 +26,7 @@ export class MethodGenerator {
     return !!this.method;
   }
 
-  public Generate(): Tsoa.Method {
+  public Generate(): Typeswag.Method {
     if (!this.IsValid()) {
       throw new GenerateMetadataError('This isn\'t a valid a controller method.');
     }
@@ -59,7 +59,7 @@ export class MethodGenerator {
     };
   }
 
-  private buildParameters() {
+  private buildParameters(): Typeswag.Parameter[] {
     const parameters = this.node.parameters.map((p) => {
       try {
         return new ParameterGenerator(p, this.method, this.path, this.current).Generate();
@@ -70,8 +70,8 @@ export class MethodGenerator {
       }
     });
 
-    const bodyParameters = parameters.filter((p) => p.in === 'body');
-    const bodyProps = parameters.filter((p) => p.in === 'body-prop');
+    const bodyParameters = parameters.filter((p) => p ? p.in === 'body' : false);
+    const bodyProps = parameters.filter((p) => p ? p.in === 'body-prop' : false);
 
     if (bodyParameters.length > 1) {
       throw new GenerateMetadataError(`Only one body parameter allowed in '${this.getCurrentLocation()}' method.`);
@@ -79,7 +79,7 @@ export class MethodGenerator {
     if (bodyParameters.length > 0 && bodyProps.length > 0) {
       throw new GenerateMetadataError(`Choose either during @Body or @BodyProp in '${this.getCurrentLocation()}' method.`);
     }
-    return parameters;
+    return (parameters.filter((p) => p !== null) as Typeswag.Parameter[]);
   }
 
   private getCurrentLocation() {
@@ -107,7 +107,7 @@ export class MethodGenerator {
     this.path = decoratorArgument ? `${decoratorArgument.text}` : '';
   }
 
-  private getMethodResponses(): Tsoa.Response[] {
+  private getMethodResponses(): Typeswag.Response[] {
     const decorators = this.getDecoratorsByIdentifier(this.node, 'Response');
     if (!decorators || !decorators.length) {
       return [];
@@ -137,11 +137,11 @@ export class MethodGenerator {
         schema: (expression.typeArguments && expression.typeArguments.length > 0)
           ? new TypeResolver(expression.typeArguments[0], this.current).resolve()
           : undefined,
-      } as Tsoa.Response;
+      } as Typeswag.Response;
     });
   }
 
-  private getMethodSuccessResponse(type: Tsoa.Type): Tsoa.Response {
+  private getMethodSuccessResponse(type: Typeswag.Type): Typeswag.Response {
     const decorators = this.getDecoratorsByIdentifier(this.node, 'SuccessResponse');
     if (!decorators || !decorators.length) {
       return {
@@ -250,7 +250,7 @@ export class MethodGenerator {
     return true;
   }
 
-  private getSecurity(): Tsoa.Security[] {
+  private getSecurity(): Typeswag.Security[] {
     const securityDecorators = this.getDecoratorsByIdentifier(this.node, 'Security');
     if (!securityDecorators || !securityDecorators.length) {
       return this.parentSecurity || [];

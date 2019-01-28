@@ -16,6 +16,13 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: ts.Identif
     .filter(isMatching);
 }
 
+export function getOnlyDecoratorName(node: ts.Node) {
+  const decorators = getDecorators(node, (_) => true);
+  if (!decorators || !decorators.length) { return; }
+
+  return decorators[0].text;
+}
+
 export function getDecoratorName(node: ts.Node, isMatching: (identifier: ts.Identifier) => boolean) {
   const decorators = getDecorators(node, isMatching);
   if (!decorators || !decorators.length) { return; }

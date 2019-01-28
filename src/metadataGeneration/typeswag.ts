@@ -1,4 +1,4 @@
-export namespace Tsoa {
+export namespace Typeswag {
   export interface Metadata {
     controllers: Controller[];
     referenceTypeMap: ReferenceTypeMap;
@@ -25,7 +25,6 @@ export namespace Tsoa {
     summary?: string;
     isHidden: boolean;
     operationId?: string;
-
   }
 
   export interface Parameter {
@@ -94,6 +93,6 @@ export namespace Tsoa {
   }
 
   export interface ReferenceTypeMap {
-    [refName: string]: Tsoa.ReferenceType;
+    [refName: string]: Typeswag.ReferenceType;
   }
 }
