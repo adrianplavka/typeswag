@@ -77,13 +77,13 @@ export class MethodController extends Controller {
         return new ModelService().getModel();
     }
 
-    @Security('tsoa_auth', ['write:pets', 'read:pets'])
+    @Security('auth', ['write:pets', 'read:pets'])
     @Get('OauthSecurity')
     public async oauthSecurity(): Promise<TestModel> {
         return new ModelService().getModel();
     }
 
-    @Security('tsoa_auth', ['write:pets', 'read:pets'])
+    @Security('auth', ['write:pets', 'read:pets'])
     @Security('api_key')
     @Get('OauthOrAPIkeySecurity')
     public async oauthOrAPIkeySecurity(): Promise<TestModel> {
@@ -92,7 +92,7 @@ export class MethodController extends Controller {
 
     @Security({
       api_key: [],
-      tsoa_auth: ['write:pets', 'read:pets'],
+      auth: ['write:pets', 'read:pets'],
     })
     @Get('OauthAndAPIkeySecurity')
     public async oauthAndAPIkeySecurity(): Promise<TestModel> {

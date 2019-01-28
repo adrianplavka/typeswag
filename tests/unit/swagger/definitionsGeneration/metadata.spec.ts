@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import { MetadataGenerator } from '../../../../src/metadataGeneration/metadataGenerator';
-import { Tsoa } from '../../../../src/metadataGeneration/tsoa';
+import { Typeswag } from '../../../../src/metadataGeneration/typeswag';
 
 describe('Metadata generation', () => {
   const metadata = new MetadataGenerator('./tests/fixtures/controllers/getController.ts').Generate();
@@ -158,7 +158,7 @@ describe('Metadata generation', () => {
       if (!method.security) {
         throw new Error('Security decorator not defined!');
       }
-      expect(method.security[0].tsoa_auth).to.deep.equal(['write:pets', 'read:pets']);
+      expect(method.security[0].auth).to.deep.equal(['write:pets', 'read:pets']);
     });
 
     it('should generate oauth2 or api key security', () => {
@@ -169,7 +169,7 @@ describe('Metadata generation', () => {
       if (!method.security) {
         throw new Error('Security decorator not defined!');
       }
-      expect(method.security[0].tsoa_auth).to.deep.equal(['write:pets', 'read:pets']);
+      expect(method.security[0].auth).to.deep.equal(['write:pets', 'read:pets']);
       expect(method.security[1].api_key).to.deep.equal([]);
     });
 
@@ -181,7 +181,7 @@ describe('Metadata generation', () => {
       if (!method.security) {
         throw new Error('Security decorator not defined!');
       }
-      expect(method.security[0].tsoa_auth).to.deep.equal(['write:pets', 'read:pets']);
+      expect(method.security[0].auth).to.deep.equal(['write:pets', 'read:pets']);
       expect(method.security[0].api_key).to.deep.equal([]);
     });
 
@@ -273,7 +273,7 @@ describe('Metadata generation', () => {
       expect(genderParam.required).to.be.true;
       expect(genderParam.type.dataType).to.equal('enum');
 
-      const nicknamesParam = method.parameters[6] as Tsoa.ArrayParameter;
+      const nicknamesParam = method.parameters[6] as Typeswag.ArrayParameter;
       expect(nicknamesParam.in).to.equal('query');
       expect(nicknamesParam.name).to.equal('nicknames');
       expect(nicknamesParam.parameterName).to.equal('nicknames');

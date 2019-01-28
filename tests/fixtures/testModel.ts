@@ -1,6 +1,6 @@
 /**
  * This is a description of a model
- * @tsoaModel
+ * @typeswagModel
  * @example
  * {
  *   "boolArray": [true, false],
