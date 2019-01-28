@@ -6,6 +6,10 @@ node_js:
 matrix:
   fast_finish: true
 
+cache:
+  directories:
+    - node_modules
+
 deploy:
   provider: npm
   email: adrian.plavka@gmail.com
