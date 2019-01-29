@@ -6,9 +6,3 @@ matrix:
 cache:
   directories:
   - node_modules
-deploy:
-  provider: npm
-  email: adrian.plavka@gmail.com
-  api_key:
-    secure: M6Ik7WoJTnH9I5k6sGm0q0PE5Hrvd1AZSOEHQstRu67eqZttcqSsB6S/lSD1o8yoGlM/94jzKDKkW4/CtmsTMzNXS1Hukc2EAWmv5W2nGQ6PFENIzZ0Qfa4t0SB0P8sqWLxWIjzxWdN5hH+U4uqOCFGXbuUiP+NWRt6H3jC50lU69uX+pYl9Xc3M6k5IzWVB4H9YJGQSX3GVhUCrNzmVwXRBsSGBYO55e6tacgq2MB80elN48aoC1VGRPe/9a1EVvbm5zyXK21ovyTqeOTRI/QZ15u8OXd6qHa4O+XX9r61+Z4VBK8QvWjlxIKaewcREI3xVolPhO0Mk+Zp/4hVpkX1ae9oVIX9KuFw2UPozBwMUYOxNio4nDWD4j5PfZULqtpExRdMIsRbwLWR57JTzdDdmSVWrIeHa6DUskaxbDU+YDTyoNd2pwZDMthYc2f2Df0Fh6Rk8Td6rSabr43lVSHEtM23CuNtyzipOvWsg3KTEONX5tA9GlZ5jO7QCpTpAReJfZw8CkSBae8HgLDf3ZM/HiBCA8Zr0RfHG8CZ9CrGZqLGs6MhyXYFJcAsG9M3Vf08COHw4vVqEZqvx9QVeDdfSXnq5eJcjSgA/18avoAyWziii68ErDkFODc+X/8+z00m3gisYkG0Hro0zMp8szt0b8x+t6adA5o3FzhB+CJo=
-  skip_cleanup: true
