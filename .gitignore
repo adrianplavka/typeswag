@@ -1,5 +1,4 @@
 dist
 node_modules
 routes.ts
-.vscode
 yarn.lock
