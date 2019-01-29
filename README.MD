@@ -1,6 +1,7 @@
 # typeswag
 
 [![Build Status](https://travis-ci.com/adrianplavka/typeswag.svg?branch=master)](https://travis-ci.com/adrianplavka/typeswag)
+[![npm version](https://badge.fury.io/js/typeswag.svg)](https://badge.fury.io/js/typeswag)
 
 ## Table of Contents
 
