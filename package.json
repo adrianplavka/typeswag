@@ -21,6 +21,7 @@
     "clean": "rimraf dist",
     "lint": "tslint --exclude ./node_modules/** ./src/**/*.ts ./tests/**/*.ts",
     "format": "tsfmt -r",
+    "prepare": "npm run build",
     "deploy": "npm version patch -m \"Release v%s\" && npm publish",
     "preversion": "npm test",
     "postversion": "git push origin master && git push --follow-tags",
