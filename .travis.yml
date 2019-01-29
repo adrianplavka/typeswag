@@ -14,3 +14,4 @@ deploy:
   on:
     tags: true
     repo: adrianplavka/typeswag
+  skip_cleanup: true
