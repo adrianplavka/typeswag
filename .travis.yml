@@ -6,12 +6,3 @@ matrix:
 cache:
   directories:
   - node_modules
-deploy:
-  provider: npm
-  email: adrian.plavka@gmail.com
-  api_key:
-    secure: v9cHZQ9aTVeK1i0D6em+SJj2PPop6L2GDGu8ni+Iz/WcZDokPI30KLwL30T4VhsZTn3x69yb3Yb9Qg2IxmLGSoYP7LyGqsh6HEaslbJH8cnKtAtjN7MAjtxPSD2ohZ18q9kA5l2KB1Ip34i2yZhn33YTe8LNnM1zwQ0UdguweEgfGmYJlEUiG/1bswBVS88qQ+x8eZWv0BdnJJajSuiMZhUhYgX8UIS3+3fZWnYE8KcJ6gms9F6xm3hjR1TddCiULpTrRhLmS+IVkG55wUF+Y0m3hnngMxti2nWlFLzenkBZDf3y514lOUVD6CqTG45HJvrqDZVHK0Igqj6sP/usIRRB6oizHer+zbtTQy5akQr0lkMJHSW1NsMSp7XRSrYhU/1mdDDWlChgLBuM4CIQ1dDLwe9CAWzt03s+ztaEF/d4ioXjjhJUUPbAiFDn1w/JxJ31Z4H42UvFTmSlGM8/E9NLB1KPCvYzvDX2NDQ6P4Dyvd1yomaSp7UnBw6IgXQu+imDv3lFK4MMXdsKKuCCMzvxxIG/IubrxcIbMXe3IICl8FrzCJg+Mgyx6kj6dL5pxpdCR3fgz1WeBy/D/yCulcDItsgADTjB5OUQaU9Of6NrJ05VPWmKaLpXW2oUdnVV49PrHCX+eggc4WV83+zRIapi6bCpMEN1V44fzvu2Wy8=
-  on:
-    tags: true
-    repo: adrianplavka/typeswag
-  skip_cleanup: true
