@@ -1,5 +1,7 @@
 # typeswag
 
+[![Build Status](https://travis-ci.com/adrianplavka/typeswag.svg?branch=master)](https://travis-ci.com/adrianplavka/typeswag)
+
 ## Table of Contents
 
   * [Overview](#overview)
