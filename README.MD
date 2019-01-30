@@ -3,9 +3,12 @@
 [![Build Status](https://travis-ci.com/adrianplavka/typeswag.svg?branch=master)](https://travis-ci.com/adrianplavka/typeswag)
 [![npm version](https://badge.fury.io/js/typeswag.svg)](https://badge.fury.io/js/typeswag)
 
+Generate Swagger documentation from self-descriptive controllers, that make heavy use of decorators. Best used with another library, that use decorators to register controllers (f.e. [routing-controllers](https://github.com/typestack/routing-controllers)) with web framework of choice.
+
+This is a clone of [tsoa](https://github.com/lukeautry/tsoa). This library stripped it's route generation module, as it should be focused only with generating Swagger documentation.
+
 ## Table of Contents
 
-  * [Overview](#overview)
   * [Philosophy](#philosophy)
   * [Goal](#goal)
   * [How it works](#how-it-works)
@@ -21,15 +24,9 @@
     - [Tags](#tags)
     - [OperationId](#operationid)
 
-## Overview
-
-This library will generate Swagger documentation with self-descriptive controllers, that make heavy use of decorators. Best used with another library, that use decorators to register controllers with web framework of choice (f.e. [routing-controllers](https://github.com/typestack/routing-controllers)).
-
-This is a fork of [tsoa](https://github.com/lukeautry/tsoa). This library stripped it's route generation module, as this library should be focused only with generating Swagger documentation.
-
 ## Philosophy
 
-Tsoa's Swagger documentation module works well, but it's limitation of injecting custom decorators proved to be the reason of forking. That is why this fork:
+Tsoa's Swagger documentation module works well, but it's limitation of injecting custom decorators proved to be the reason of cloning. That is why this clone:
 
 - Should register & not interfere with custom decorators, including
   * [x] route decorators
@@ -79,13 +76,13 @@ Note, that the examples provided are done with [routing-controllers](https://git
 
 const package = require('../package.json');
 const routingControllers = require('routing-controllers');
-const tsoa = require('tsoa');
+const typeswag = require('typeswag');
 
 // This registers custom route decorators, that will be known during generating.
-tsoa.registerRouteDecorator(routingControllers.Controller);
-tsoa.registerRouteDecorator(routingControllers.JsonController);
+typeswag.registerRouteDecorator(routingControllers.Controller);
+typeswag.registerRouteDecorator(routingControllers.JsonController);
 
-tsoa.generateSwaggerSpec({
+typeswag.generateSwaggerSpec({
     version: package.version,
     outputDirectory: './src/api/',
     entryFile: './src/api/controllers/index.ts',
@@ -93,10 +90,21 @@ tsoa.generateSwaggerSpec({
 });
 ```
 
+### Create Entry File
+
+```typescript
+// src/api/controllers/index.ts
+
+// These imports will be crawled by the metadata generator.
+import "./UserController";
+import "./PetController";
+// ...
+```
+
 ### Create Controllers
 
 ```typescript
-// controllers/usersController.ts
+// src/api/controllers/UserController.ts
 
 import { JsonController, Get, Post, Body } from 'routing-controllers';
 import { SuccessResponse } from 'typeswag';
@@ -104,20 +112,29 @@ import { UserService } from '../services/UserService';
 import { User, UserCreationRequest } from '../models/User';
 
 @JsonController('/user')
-export class UserController extends Controller {
+export class UserController {
 
+    // jsDoc comments will be added to the documentation as a description.
+    /**
+     * GetUser is a controller function, that will accept an id path with a name in query
+     * & return the user.
+     * 
+     * @param id Identification of user in path
+     * @param name Name of the user in query
+     * @returns User
+     * 
+     */ 
     @Get('/{id}')
     public async getUser(id: number, @Query() name: string): Promise<User> {
         return await new UserService().get(id);
     }
 
-    // In order to provide more hints to the Swagger generator, we can mix typeswag's
+    // To provide more hints to the Swagger generator, we can mix typeswag's
     // decorators with custom decorators.
     @SuccessResponse('201', 'Created')
     @Post()
-    public async createUser(@Body() requestBody: UserCreationRequest): Promise<void> {
-        new UserService().create(request);
-        return Promise.resolve();
+    public async createUser(@Body() user: UserCreationRequest): Promise<void> {
+        new UserService().create(user);
     }
 }
 ```
@@ -158,7 +175,7 @@ If you have multiple models with the same name, you may get errors indicating th
  * @typeswagModel
  */
 export interface MyModel {
-    ...
+    // ...
 }
 ```
 
