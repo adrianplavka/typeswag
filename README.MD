@@ -53,7 +53,7 @@ This library inherits previous philosophies:
 
 When you specify an entry TypeScript file, the metadata generation module will create a TypeScript in-memory program & parse through the AST nodes.
 
-From there, it tries to find classes (controllers) from that entry file, that are annotated with registered route decorators. After that, controller's registered methods & parameters are sequentially added to the metadata.
+It tries to find classes (controllers) from that entry file, that are annotated with registered route decorators. After that, controller's registered methods & parameters are sequentially added to the metadata.
 
 Since parameters are typed, it tries to bind that type to an interface or class & add those attributes to the metadata.
 
