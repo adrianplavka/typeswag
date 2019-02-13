@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { CustomRouteDecorator } from '../module/customDecorators';
-import { getDecorators, getOnlyDecoratorName } from './../utils/decoratorUtils';
+import { getDecorators } from './../utils/decoratorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { MetadataGenerator } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';
@@ -53,7 +53,15 @@ export class ControllerGenerator {
   }
 
   private getPath() {
-    const decorators = getDecorators(this.node, (identifier) => this.supportRouteDecorator(identifier.text));
+    let decoratorName = "";
+    const decorators = getDecorators(this.node, (identifier) => {
+      if (this.supportRouteDecorator(identifier.text)) {
+        decoratorName = identifier.text;
+        return true;
+      }
+      return false;
+    });
+
     if (!decorators || !decorators.length) {
       return;
     }
@@ -64,7 +72,6 @@ export class ControllerGenerator {
     const decorator = decorators[0];
     const expression = decorator.parent as ts.CallExpression;
     const decoratorArgument = expression.arguments[0] as ts.StringLiteral;
-    const decoratorName = getOnlyDecoratorName(this.node);
     let path = decoratorArgument ? `${decoratorArgument.text}` : '';
 
     if (decoratorName && this.customRouteDecorators && this.customRouteDecorators[decoratorName] && this.customRouteDecorators[decoratorName].callback) {
