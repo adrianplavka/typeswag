@@ -74,7 +74,7 @@ Note, that the examples provided are done with [routing-controllers](https://git
 ```javascript
 // commands/swagger.js
 
-const package = require('../package.json');
+const pkg = require('../package.json');
 const routingControllers = require('routing-controllers');
 const typeswag = require('typeswag');
 
@@ -83,7 +83,9 @@ typeswag.registerRouteDecorator(routingControllers.Controller);
 typeswag.registerRouteDecorator(routingControllers.JsonController);
 
 typeswag.generateSwaggerSpec({
-    version: package.version,
+    name: pkg.name,
+    description: pkg.description,
+    version: pkg.version,
     outputDirectory: './src/api/',
     entryFile: './src/api/controllers/index.ts',
     basePath: '/api',
@@ -186,7 +188,7 @@ If you have a project that needs a description and/or external docs for tags, yo
 ```javascript
 // commands/swagger.js
 
-tsoa.generateSwaggerSpec({
+typeswag.generateSwaggerSpec({
     // ...
     tags: [
         {
