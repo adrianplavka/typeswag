@@ -284,7 +284,7 @@ describe('Metadata generation', () => {
       expect(nicknamesParam.type.elementType).to.deep.equal({ dataType: 'string' });
     });
 
-    it('should generate an path parameter', () => {
+    it('should generate a path parameter', () => {
       const method = controller.methods.find(m => m.name === 'getPath');
       if (!method) {
         throw new Error('Method getPath not defined!');
@@ -341,7 +341,7 @@ describe('Metadata generation', () => {
       expect(genderParam.type.dataType).to.equal('enum');
     });
 
-    it('should generate an header parameter', () => {
+    it('should generate a header parameter', () => {
       const method = controller.methods.find(m => m.name === 'getHeader');
       if (!method) {
         throw new Error('Method getHeader not defined!');
@@ -398,7 +398,7 @@ describe('Metadata generation', () => {
       expect(genderParam.type.dataType).to.equal('enum');
     });
 
-    it('should generate an request parameter', () => {
+    it('should generate a request parameter', () => {
       const method = controller.methods.find(m => m.name === 'getRequest');
       if (!method) {
         throw new Error('Method getRequest not defined!');

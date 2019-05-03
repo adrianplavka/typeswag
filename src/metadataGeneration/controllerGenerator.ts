@@ -53,7 +53,7 @@ export class ControllerGenerator {
   }
 
   private getPath() {
-    let decoratorName = "";
+    let decoratorName = '';
     const decorators = getDecorators(this.node, (identifier) => {
       if (this.supportRouteDecorator(identifier.text)) {
         decoratorName = identifier.text;
