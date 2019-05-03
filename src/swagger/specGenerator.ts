@@ -90,14 +90,14 @@ export class SpecGenerator {
         const normalisedMethodPath = normalisePath(method.path, '/');
         const path = normalisePath(`${normalisedControllerPath}${normalisedMethodPath}`, '/', '', false);
         paths[path] = paths[path] || {};
-        this.buildMethod(controller.name, method, paths[path]);
+        this.buildMethod(controller.name, method, normalisedControllerPath, paths[path]);
       });
     });
 
     return paths;
   }
 
-  private buildMethod(controllerName: string, method: Typeswag.Method, pathObject: any) {
+  private buildMethod(controllerName: string, method: Typeswag.Method, controllerPath: string, pathObject: any) {
     const pathMethod: Swagger.Operation = pathObject[method.method] = this.buildOperation(controllerName, method);
     pathMethod.description = method.description;
     pathMethod.summary = method.summary;
@@ -120,6 +120,12 @@ export class SpecGenerator {
       })
       .map(p => this.buildParameter(p));
 
+    // Build path parameters at the top controller level.
+    // They will always be of type 'string'.
+    const controllerPathParametersMatch = controllerPath.match(/\{(.+?)\}/g);
+    const controllerPathParameters = controllerPathParametersMatch ? controllerPathParametersMatch.map(p => p.substring(1, p.length - 1)) : [];
+    pathMethod.parameters = [...pathMethod.parameters, ...this.buildControllerPathParameters(controllerPathParameters)];
+
     const bodyPropParameter = this.buildBodyPropParameter(controllerName, method);
     if (bodyPropParameter) {
       pathMethod.parameters.push(bodyPropParameter);
@@ -127,6 +133,17 @@ export class SpecGenerator {
     if (pathMethod.parameters.filter((p: Swagger.BaseParameter) => p.in === 'body').length > 1) {
       throw new Error('Only one body parameter allowed per controller method.');
     }
+  }
+
+  private buildControllerPathParameters(paths: RegExpMatchArray) {
+    return paths.map(p => {
+      return {
+        in: 'path',
+        name: p,
+        required: true,
+        type: 'string',
+      } as Swagger.Parameter;
+    });
   }
 
   private buildBodyPropParameter(controllerName: string, method: Typeswag.Method) {
