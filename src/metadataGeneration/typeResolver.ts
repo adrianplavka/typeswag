@@ -62,10 +62,10 @@ export class TypeResolver {
 
     if (this.typeNode.kind === ts.SyntaxKind.LiteralType) {
       const literalType = this.typeNode as ts.LiteralTypeNode;
-      const a = literalType.literal as ts.LiteralExpression;
+      const literal = literalType.literal as ts.LiteralExpression;
       return {
         dataType: 'enum',
-        enums: [a.text],
+        enums: [literal.text],
       } as Typeswag.EnumerateType;
     }
 
