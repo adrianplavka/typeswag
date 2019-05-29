@@ -60,6 +60,15 @@ export class TypeResolver {
       }
     }
 
+    if (this.typeNode.kind === ts.SyntaxKind.LiteralType) {
+      const literalType = this.typeNode as ts.LiteralTypeNode;
+      const a = literalType.literal as ts.LiteralExpression;
+      return {
+        dataType: 'enum',
+        enums: [a.text],
+      } as Typeswag.EnumerateType;
+    }
+
     if (this.typeNode.kind === ts.SyntaxKind.AnyKeyword) {
       return { dataType: 'any' } as Typeswag.Type;
     }
