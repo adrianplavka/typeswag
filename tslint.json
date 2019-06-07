@@ -32,7 +32,6 @@
     "no-reference": false,
     "no-namespace": [
       false
-    ],
-    "ban-types": false
+    ]
   }
 }

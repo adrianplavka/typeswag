@@ -1,11 +1,11 @@
 import {
-    Controller, Get, Route,
+    Get, Route,
 } from '../../../src';
 import { TestModel } from '../../fixtures/testModel';
 import { ModelService } from '../services/modelService';
 
 @Route()
-export class RootController extends Controller {
+export class RootController {
 
     @Get()
     public async rootHandler(): Promise<TestModel> {
@@ -14,7 +14,7 @@ export class RootController extends Controller {
 
     @Get('rootControllerMethodWithPath')
     public async rootControllerMethodWithPath(): Promise<TestModel> {
-      return Promise.resolve(new ModelService().getModel());
+        return Promise.resolve(new ModelService().getModel());
     }
 
 }

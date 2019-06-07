@@ -1,12 +1,12 @@
 import {
-    Controller, Get, Route,
+    Get, Route,
 } from '../../../src';
 import { TestModel } from '../../fixtures/testModel';
 import { NonFactoryDecorator } from '../custom/non-factory-decorator';
 import { ModelService } from '../services/modelService';
 
 @Route('Controller')
-export class TestController extends Controller {
+export class TestController {
 
     @NonFactoryDecorator
     @Get('normalStatusCode')
@@ -30,7 +30,6 @@ export class TestController extends Controller {
 
         return new Promise<TestModel>(resolve => {
             setTimeout(() => {
-                this.setStatus(205);
                 resolve(service.getModel());
             }, 1000);
         });
@@ -40,8 +39,6 @@ export class TestController extends Controller {
     public async customHeader(): Promise<void> {
         return new Promise<void>(resolve => {
             setTimeout(() => {
-                this.setHeader('hero', 'IronMan');
-                this.setHeader('name', 'Tony Stark');
                 resolve();
             }, 1000);
         });

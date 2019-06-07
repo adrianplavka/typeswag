@@ -6,48 +6,48 @@ import { getDefaultOptions } from '../../../fixtures/defaultOptions';
 import { VerifyPath } from '../../utilities/verifyPath';
 
 describe('Security route generation', () => {
-  const metadata = new MetadataGenerator('./tests/fixtures/controllers/securityController.ts').Generate();
-  const spec = new SpecGenerator(metadata, getDefaultOptions()).GetSpec();
+    const metadata = new MetadataGenerator('./tests/fixtures/controllers/securityController.ts').Generate();
+    const spec = new SpecGenerator(metadata, getDefaultOptions()).GetSpec();
 
-  it('should generate a route with a named security', () => {
-    const path = verifyPath('/SecurityTest');
+    it('should generate a route with a named security', () => {
+        const path = verifyPath('/SecurityTest');
 
-    if (!path.get) { throw new Error('No get operation.'); }
+        if (!path.get) { throw new Error('No get operation.'); }
 
-    expect(path.get.security).to.deep.equal([{api_key: []}]);
-  });
+        expect(path.get.security).to.deep.equal([{ api_key: [] }]);
+    });
 
-  it('should generate a route with scoped security', () => {
-    const path = verifyPath('/SecurityTest/Oauth');
+    it('should generate a route with scoped security', () => {
+        const path = verifyPath('/SecurityTest/Oauth');
 
-    if (!path.get) { throw new Error('No get operation.'); }
+        if (!path.get) { throw new Error('No get operation.'); }
 
-    expect(path.get.security).to.deep.equal([{auth: ['write:pets', 'read:pets']}]);
-  });
+        expect(path.get.security).to.deep.equal([{ auth: ['write:pets', 'read:pets'] }]);
+    });
 
-  it('should generate a route with security A OR security B', () => {
-    const path = verifyPath('/SecurityTest/OauthOrAPIkey');
+    it('should generate a route with security A OR security B', () => {
+        const path = verifyPath('/SecurityTest/OauthOrAPIkey');
 
-    if (!path.get) { throw new Error('No get operation.'); }
+        if (!path.get) { throw new Error('No get operation.'); }
 
-    expect(path.get.security).to.deep.equal([
-      { auth: [ 'write:pets', 'read:pets' ] },
-      { api_key: [] },
-    ]);
-  });
+        expect(path.get.security).to.deep.equal([
+            { auth: ['write:pets', 'read:pets'] },
+            { api_key: [] },
+        ]);
+    });
 
-  it('should generate a route with security A AND security B', () => {
-    const path = verifyPath('/SecurityTest/OauthAndAPIkey');
+    it('should generate a route with security A AND security B', () => {
+        const path = verifyPath('/SecurityTest/OauthAndAPIkey');
 
-    if (!path.get) { throw new Error('No get operation.'); }
+        if (!path.get) { throw new Error('No get operation.'); }
 
-    expect(path.get.security).to.deep.equal([{
-      api_key: [],
-      auth: [ 'write:pets', 'read:pets' ],
-    }]);
-  });
+        expect(path.get.security).to.deep.equal([{
+            api_key: [],
+            auth: ['write:pets', 'read:pets'],
+        }]);
+    });
 
-  function verifyPath(route: string, isCollection?: boolean) {
-    return VerifyPath(spec, route, path => path.get, isCollection, false, '#/definitions/UserResponseModel');
-  }
+    function verifyPath(route: string, isCollection?: boolean) {
+        return VerifyPath(spec, route, path => path.get, isCollection, false, '#/definitions/UserResponseModel');
+    }
 });

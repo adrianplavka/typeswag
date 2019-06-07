@@ -1,3 +1,3 @@
-export function Example<T>(exampleModel: T): Function {
-  return () => { return; };
+export function Example<T>(exampleModel: T): MethodDecorator {
+    return () => { return; };
 }

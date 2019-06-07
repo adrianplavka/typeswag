@@ -1,11 +1,11 @@
 import {
-    Controller, Get, Hidden, Route,
+    Get, Hidden, Route,
 } from '../../../src';
 import { TestModel } from '../../fixtures/testModel';
 import { ModelService } from '../services/modelService';
 
 @Route('Controller')
-export class HiddenMethodController extends Controller {
+export class HiddenMethodController {
 
     @Get('normalGetMethod')
     public async normalGetMethod(): Promise<TestModel> {

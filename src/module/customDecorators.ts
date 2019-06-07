@@ -1,16 +1,16 @@
 
 export interface CustomDecorators {
-  routes: CustomRouteDecorator;
+    routes: CustomRouteDecorator;
 }
 
 export interface CustomRouteDecorator {
-  [name: string]: CustomRouteDecoratorOptions;
+    [name: string]: CustomRouteDecoratorOptions;
 }
 
 interface CustomRouteDecoratorOptions {
-  callback?: (path: string) => string;
+    callback?: (path: string) => string;
 }
 
 export const registeredDecorators: CustomDecorators = {
-  routes: {},
+    routes: {},
 };

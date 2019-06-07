@@ -1,3 +1,3 @@
-export function OperationId(value: string): Function {
-  return () => { return; };
+export function OperationId(value: string): MethodDecorator {
+    return () => { return; };
 }

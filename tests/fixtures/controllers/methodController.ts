@@ -1,5 +1,4 @@
 import {
-    Controller,
     Delete,
     Get,
     Patch,
@@ -15,7 +14,7 @@ import { ModelService } from '../services/modelService';
 import { ErrorResponseModel, TestModel } from '../testModel';
 
 @Route('MethodTest')
-export class MethodController extends Controller {
+export class MethodController {
 
     @Get('Get')
     public async getMethod(): Promise<TestModel> {
@@ -67,7 +66,6 @@ export class MethodController extends Controller {
     @SuccessResponse('201', 'Created')
     @Get('SuccessResponse')
     public async successResponse(): Promise<void> {
-        this.setStatus(201);
         return Promise.resolve();
     }
 
@@ -91,8 +89,8 @@ export class MethodController extends Controller {
     }
 
     @Security({
-      api_key: [],
-      auth: ['write:pets', 'read:pets'],
+        api_key: [],
+        auth: ['write:pets', 'read:pets'],
     })
     @Get('OauthAndAPIkeySecurity')
     public async oauthAndAPIkeySecurity(): Promise<TestModel> {
