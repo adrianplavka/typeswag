@@ -69,11 +69,11 @@ export class TypeResolver {
             } as Typeswag.EnumerateType;
         }
 
-        if (this.typeNode.kind === ts.SyntaxKind.AnyKeyword) {
-            return { dataType: 'any' } as Typeswag.Type;
+        if (this.typeNode.kind === ts.SyntaxKind.ObjectKeyword) {
+            return { dataType: 'object' } as Typeswag.Type;
         }
 
-        if (this.typeNode.kind === ts.SyntaxKind.TypeLiteral) {
+        if ([ts.SyntaxKind.AnyKeyword, ts.SyntaxKind.TypeLiteral, ts.SyntaxKind.UnknownKeyword].some(kind => kind === this.typeNode.kind)) {
             return { dataType: 'any' } as Typeswag.Type;
         }
 
