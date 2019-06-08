@@ -43,17 +43,28 @@ export class TypeResolver {
         if (this.typeNode.kind === ts.SyntaxKind.UnionType) {
             const unionType = this.typeNode as ts.UnionTypeNode;
             const supportType = unionType.types.some((type) => type.kind === ts.SyntaxKind.LiteralType);
+
             if (supportType) {
+                let valueType = 'string';
+                const enums = unionType.types.map((type) => {
+                    const literalType = (type as ts.LiteralTypeNode).literal;
+                    switch (literalType.kind) {
+                        case ts.SyntaxKind.TrueKeyword: valueType = 'boolean'; return 'true';
+                        case ts.SyntaxKind.FalseKeyword: valueType = 'boolean'; return 'false';
+                        case ts.SyntaxKind.NumericLiteral: valueType = 'number'; return Number((type as any).literal.text);
+                        default: return String((literalType as any).text);
+                    }
+                });
+
+                const areTypesEqual = enums.every(enumValue => typeof enumValue === typeof enums[0]);
+                if (!areTypesEqual) {
+                    throw new Error(`All values from ${this.typeNode.getText()} in union must match in type!`);
+                }
+
                 return {
                     dataType: 'enum',
-                    enums: unionType.types.map((type) => {
-                        const literalType = (type as ts.LiteralTypeNode).literal;
-                        switch (literalType.kind) {
-                            case ts.SyntaxKind.TrueKeyword: return 'true';
-                            case ts.SyntaxKind.FalseKeyword: return 'false';
-                            default: return String((literalType as any).text);
-                        }
-                    }),
+                    enums,
+                    valueType,
                 } as Typeswag.EnumerateType;
             } else {
                 return { dataType: 'object' } as Typeswag.Type;
@@ -63,17 +74,20 @@ export class TypeResolver {
         if (this.typeNode.kind === ts.SyntaxKind.LiteralType) {
             const literalType = this.typeNode as ts.LiteralTypeNode;
             const literal = literalType.literal as ts.LiteralExpression;
-            return {
-                dataType: 'enum',
-                enums: [literal.text],
-            } as Typeswag.EnumerateType;
+
+            switch (literal.kind) {
+                case ts.SyntaxKind.TrueKeyword: return { dataType: 'enum', enums: ['true'], valueType: 'boolean' } as Typeswag.EnumerateType;
+                case ts.SyntaxKind.FalseKeyword: return { dataType: 'enum', enums: ['false'], valueType: 'boolean' } as Typeswag.EnumerateType;
+                case ts.SyntaxKind.NumericLiteral: return { dataType: 'enum', enums: [Number(literal.text)], valueType: 'number' } as Typeswag.EnumerateType;
+                default: return { dataType: 'enum', enums: [literal.text] } as Typeswag.EnumerateType;
+            }
         }
 
         if (this.typeNode.kind === ts.SyntaxKind.ObjectKeyword) {
             return { dataType: 'object' } as Typeswag.Type;
         }
 
-        if ([ts.SyntaxKind.AnyKeyword, ts.SyntaxKind.TypeLiteral, ts.SyntaxKind.UnknownKeyword].some(kind => kind === this.typeNode.kind)) {
+        if ([ts.SyntaxKind.AnyKeyword, ts.SyntaxKind.TypeLiteral, ts.SyntaxKind.UnknownKeyword, ts.SyntaxKind.NeverKeyword].some(kind => kind === this.typeNode.kind)) {
             return { dataType: 'any' } as Typeswag.Type;
         }
 

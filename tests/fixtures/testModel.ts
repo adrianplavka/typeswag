@@ -47,7 +47,7 @@ export interface TestModel extends Model {
     modelsArray: TestSubModel[];
     strLiteralVal: StrLiteral;
     strLiteralArr: StrLiteral[];
-    unionPrimetiveType?: 'String' | 1 | 20.0 | true | false;
+    // unionPrimetiveType?: 'String' | 1 | 20.0 | true | false;
     dateValue?: Date;
     optionalString?: string;
     anyType?: any;
@@ -62,6 +62,9 @@ export interface TestModel extends Model {
     modelsEnumIndirect?: TestSubEnumModelContainer;
     typeAliasCase1?: TypeAliasModelCase1;
     TypeAliasCase2?: TypeAliasModelCase2;
+    literalModel?: LiteralsModel;
+    unknownAnyModel?: UnknownAnyNeverModel;
+    objectModel?: ObjectModel;
 }
 
 export interface TypeAliasModel1 {
@@ -339,4 +342,24 @@ export interface GenericModel<T> {
 export interface GenericRequest<T> {
     name: string;
     value: T;
+}
+
+export interface LiteralsModel {
+    singleString: 'something';
+    singleNumber: 999;
+    singleTrue: true;
+    singleFalse: false;
+    multipleStrings: 'a' | 'b' | 'c' | 'z';
+    multipleNumbers: 111 | 222 | 333;
+    multipleBooleans: false | true;
+}
+
+export interface UnknownAnyNeverModel {
+    uncharted: unknown;
+    anything: any;
+    notever: never;
+}
+
+export interface ObjectModel {
+    obj: object;
 }

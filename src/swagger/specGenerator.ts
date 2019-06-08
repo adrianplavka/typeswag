@@ -327,8 +327,10 @@ export class SpecGenerator {
             float: { type: 'number', format: 'float' },
             integer: { type: 'integer', format: 'int32' },
             long: { type: 'integer', format: 'int64' },
+            never: { type: 'object' },
             object: { type: 'object' },
             string: { type: 'string' },
+            unknown: { type: 'object' },
         } as { [name: string]: Swagger.Schema };
 
         return map[type.dataType];
@@ -339,7 +341,8 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForEnumType(enumType: Typeswag.EnumerateType): Swagger.Schema {
-        return { type: 'string', enum: enumType.enums.map(member => String(member)) };
+        const valueType = enumType.valueType ? enumType.valueType : 'string';
+        return { type: valueType, enum: (enumType as any).enums.map((member) => member) };
     }
 
     private getSwaggerTypeForReferenceType(referenceType: Typeswag.ReferenceType): Swagger.BaseSchema {

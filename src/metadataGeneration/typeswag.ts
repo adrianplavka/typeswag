@@ -74,7 +74,8 @@ export namespace Typeswag {
 
     export interface EnumerateType extends Type {
         dataType: 'enum';
-        enums: string[];
+        valueType?: 'string' | 'number' | 'boolean';
+        enums: string[] | number[];
     }
 
     export interface ArrayType extends Type {

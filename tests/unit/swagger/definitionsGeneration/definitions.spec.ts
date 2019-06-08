@@ -104,6 +104,61 @@ describe('Definition generation', () => {
 
             expect(definition.properties.boolValue.default).to.equal('true');
         });
+
+        it('should generate enum for single literal types from interface', () => {
+            const definition = getValidatedDefinition('LiteralsModel');
+            if (!definition.properties) {
+                throw new Error('No definition properties.');
+            }
+
+            expect(definition.properties.singleString.enum).to.deep.equal(['something']);
+            expect(definition.properties.singleString.type).to.equal('string');
+
+            expect(definition.properties.singleNumber.enum).to.deep.equal([999]);
+            expect(definition.properties.singleNumber.type).to.equal('number');
+
+            expect(definition.properties.singleTrue.enum).to.deep.equal(['true']);
+            expect(definition.properties.singleTrue.type).to.equal('boolean');
+
+            expect(definition.properties.singleFalse.enum).to.deep.equal(['false']);
+            expect(definition.properties.singleFalse.type).to.equal('boolean');
+        });
+
+        it('should generate enum for multiple literal types from interface', () => {
+            const definition = getValidatedDefinition('LiteralsModel');
+            if (!definition.properties) {
+                throw new Error('No definition properties.');
+            }
+
+            expect(definition.properties.multipleStrings.enum).to.deep.equal(['a', 'b', 'c', 'z']);
+            expect(definition.properties.multipleStrings.type).to.equal('string');
+
+            expect(definition.properties.multipleNumbers.enum).to.deep.equal([111, 222, 333]);
+            expect(definition.properties.multipleNumbers.type).to.equal('number');
+
+            expect(definition.properties.multipleBooleans.enum).to.deep.equal(['false', 'true']);
+            expect(definition.properties.multipleBooleans.type).to.equal('boolean');
+        });
+
+        it('should generate object types from unknown, never & any type', () => {
+            const definition = getValidatedDefinition('UnknownAnyNeverModel');
+            if (!definition.properties) {
+                throw new Error('No definition properties.');
+            }
+
+            expect(definition.properties.uncharted.type).to.equal('object');
+            expect(definition.properties.notever.type).to.equal('object');
+            expect(definition.properties.anything.type).to.equal('object');
+        });
+
+        it('should generate object type from object type', () => {
+            const definition = getValidatedDefinition('ObjectModel');
+            if (!definition.properties) {
+                throw new Error('No definition properties.');
+            }
+
+            expect(definition.properties.obj.type).to.equal('object');
+        });
     });
 
     describe('Class-based generation', () => {

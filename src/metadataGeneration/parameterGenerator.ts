@@ -186,9 +186,9 @@ export class ParameterGenerator {
     }
 
     /* This has been disabled, to support custom parameter decorators.
-  
+
     private supportParameterDecorator(decoratorName: string) {
-      return ['header', 'query', 'parem', 'body', 'bodyprop', 'request'].some((d) => d === decoratorName.toLocaleLowerCase());
+        return ['header', 'query', 'parem', 'body', 'bodyprop', 'request'].some((d) => d === decoratorName.toLocaleLowerCase());
     }
     */
 
