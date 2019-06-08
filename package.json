@@ -1,6 +1,6 @@
 {
   "name": "typeswag",
-  "description": "Build swagger-compliant REST APIs using custom self-describing decorators with TypeScript and Node",
+  "description": "Generate Swagger documentation, using custom self-describing decorators with TypeScript and Node",
   "version": "1.0.8",
   "main": "./dist/src/index.js",
   "typings": "./dist/src/index.d.ts",
