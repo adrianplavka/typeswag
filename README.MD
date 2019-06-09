@@ -30,6 +30,7 @@ Tsoa's Swagger documentation module works well, but it's limitation of injecting
 
 - Should register & not interfere with custom decorators, including
   * [x] route decorators
+  * [ ] method decorators
   * [ ] parameter decorators
 
 This library inherits previous philosophies:
@@ -71,24 +72,28 @@ Note, that the examples provided are done with [routing-controllers](https://git
 
 ### Create Configuration
 
-```javascript
-// commands/swagger.js
+```typescript
+// commands/swagger.ts
 
-const pkg = require('../package.json');
-const routingControllers = require('routing-controllers');
-const typeswag = require('typeswag');
+import * as pkg from '../package.json';
+import * as routingControllers from 'routing-controllers';
+import { SwaggerGenerator } from 'typeswag';
+
+const swagger = new SwaggerGenerator();
 
 // This registers custom route decorators, that will be known during generating.
-typeswag.registerRouteDecorator(routingControllers.Controller);
-typeswag.registerRouteDecorator(routingControllers.JsonController);
+swagger.registerRouteDecorator(routingControllers.Controller);
+swagger.registerRouteDecorator(routingControllers.JsonController, path => `/json/${path}`);
 
-typeswag.generateSwaggerSpec({
+swagger.generate({
     name: pkg.name,
     description: pkg.description,
     version: pkg.version,
-    outputDirectory: './src/api/',
-    entryFile: './src/api/controllers/index.ts',
+    entryFile: './src/index.ts',
     basePath: '/api',
+    output: {
+        path: './src/',
+    }
 });
 ```
 
@@ -113,19 +118,25 @@ import { SuccessResponse } from 'typeswag';
 import { UserService } from '../services/UserService';
 import { User, UserCreationRequest } from '../models/User';
 
-@JsonController('/user')
+/**
+ * This decorator has been registered earlier, therefore the crawler will pick it up!
+ *
+ * Also note, that the path parameter in brackets will be applied to every route.
+ */
+@JsonController('/user/{domain}')
 export class UserController {
 
-    // jsDoc comments will be added to the documentation as a description.
     /**
+     * This JSDoc comment will be added to the documentation as a description.
+     *
      * GetUser is a controller function, that will accept an id path with a name in query
      * & return the user.
      * 
      * @param id Identification of user in path
      * @param name Name of the user in query
      * @returns User
-     * 
-     */ 
+     *
+     */
     @Get('/{id}')
     public async getUser(id: number, @Query() name: string): Promise<User> {
         return await new UserService().get(id);
@@ -145,26 +156,48 @@ export class UserController {
 ```typescript
 // models/user.ts
 
-export interface User {
-    id: number;
-    email: string;
-    name: Name;
-    status?: status;
-    phoneNumbers: string[];
+/** 
+ * Classes are also supported by the generator!
+ *
+ * Only public attributes will get added to the documentation.
+ */
+export class User {
+    public id: number;
+    public username: string;
+    public password: string;
 }
 
+/**
+ * Union types are supported only for primitive values (like strings, numbers, booleans, ...).
+ * They will be represented as enum in the documentation.
+ *
+ * Note, that the types in union must be of the same type!
+ */
 export type status = 'Happy' | 'Sad';
 
+/**
+ * Interfaces work just like classes!
+ *
+ * Optional attributes will get marked as not required in the documentation.
+ */
 export interface Name {
     first: string;
     last?: string;
 }
 
-export interface UserCreationRequest {
+/**
+ * Extending interfaces works as well!
+ */
+export interface UserCreationRequest extends UserRequest {
     email: string;
     name: Name;
     phoneNumbers: string[];
 }
+
+export interface UserRequest {
+    type: 'create' | 'modify' | 'delete';
+}
+
 ```
 
 Note that type aliases are only supported for string literal types like `type status = 'Happy' | 'Sad'`
@@ -188,7 +221,8 @@ If you have a project that needs a description and/or external docs for tags, yo
 ```javascript
 // commands/swagger.js
 
-typeswag.generateSwaggerSpec({
+const swagger = new SwaggerGenerator();
+swagger.generate({
     // ...
     tags: [
         {
