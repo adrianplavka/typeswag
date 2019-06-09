@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
-import { getDecorators } from './../utils/decoratorUtils';
-import { getJSDocComment, getJSDocDescription, isExistJSDocTag } from './../utils/jsDocUtils';
+import { getDecorators } from '../utils/decoratorUtils';
+import { getJSDocComment, getJSDocDescription, isExistJSDocTag } from '../utils/jsDocUtils';
 import { GenerateMetadataError } from './exceptions';
-import { getInitializerValue } from './initializer-value';
+import { getInitializerValue } from './initializerValue';
 import { MetadataGenerator } from './metadataGenerator';
 import { ParameterGenerator } from './parameterGenerator';
 import { getSecurities } from './security';

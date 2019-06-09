@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { CustomRouteDecorator } from '../module/customDecorators';
-import { getDecorators } from './../utils/decoratorUtils';
+import { getDecorators } from '../utils/decoratorUtils';
 import { GenerateMetadataError } from './exceptions';
 import { MetadataGenerator } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';

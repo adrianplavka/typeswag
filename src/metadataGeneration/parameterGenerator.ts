@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
-import { getDecoratorName, getDecoratorTextValue } from './../utils/decoratorUtils';
-import { getParameterValidators } from './../utils/validatorUtils';
+import { getDecoratorName, getDecoratorTextValue } from '../utils/decoratorUtils';
+import { getParameterValidators } from '../utils/validatorUtils';
 import { GenerateMetadataError } from './exceptions';
-import { getInitializerValue } from './initializer-value';
+import { getInitializerValue } from './initializerValue';
 import { MetadataGenerator } from './metadataGenerator';
 import { TypeResolver } from './typeResolver';
 import { Typeswag } from './typeswag';

@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
-import { getJSDocComment, getJSDocTagNames, isExistJSDocTag } from './../utils/jsDocUtils';
-import { getPropertyValidators } from './../utils/validatorUtils';
+import { getJSDocComment, getJSDocTagNames, isExistJSDocTag } from '../utils/jsDocUtils';
+import { getPropertyValidators } from '../utils/validatorUtils';
 import { GenerateMetadataError } from './exceptions';
-import { getInitializerValue } from './initializer-value';
+import { getInitializerValue } from './initializerValue';
 import { MetadataGenerator } from './metadataGenerator';
 import { Typeswag } from './typeswag';
 
@@ -42,17 +42,24 @@ export class TypeResolver {
 
         if (this.typeNode.kind === ts.SyntaxKind.UnionType) {
             const unionType = this.typeNode as ts.UnionTypeNode;
-            const supportType = unionType.types.some((type) => type.kind === ts.SyntaxKind.LiteralType);
+            const supportType = unionType.types.every((type) => type.kind === ts.SyntaxKind.LiteralType);
 
             if (supportType) {
                 let valueType = 'string';
                 const enums = unionType.types.map((type) => {
                     const literalType = (type as ts.LiteralTypeNode).literal;
                     switch (literalType.kind) {
-                        case ts.SyntaxKind.TrueKeyword: valueType = 'boolean'; return 'true';
-                        case ts.SyntaxKind.FalseKeyword: valueType = 'boolean'; return 'false';
-                        case ts.SyntaxKind.NumericLiteral: valueType = 'number'; return Number((type as any).literal.text);
-                        default: return String((literalType as any).text);
+                        case ts.SyntaxKind.TrueKeyword:
+                            valueType = 'boolean';
+                            return 'true';
+                        case ts.SyntaxKind.FalseKeyword:
+                            valueType = 'boolean';
+                            return 'false';
+                        case ts.SyntaxKind.NumericLiteral:
+                            valueType = 'number';
+                            return Number((type as any).literal.text);
+                        default:
+                            return String((literalType as any).text);
                     }
                 });
 
@@ -67,7 +74,9 @@ export class TypeResolver {
                     valueType,
                 } as Typeswag.EnumerateType;
             } else {
-                return { dataType: 'object' } as Typeswag.Type;
+                return {
+                    dataType: 'object',
+                } as Typeswag.Type;
             }
         }
 
@@ -76,10 +85,29 @@ export class TypeResolver {
             const literal = literalType.literal as ts.LiteralExpression;
 
             switch (literal.kind) {
-                case ts.SyntaxKind.TrueKeyword: return { dataType: 'enum', enums: ['true'], valueType: 'boolean' } as Typeswag.EnumerateType;
-                case ts.SyntaxKind.FalseKeyword: return { dataType: 'enum', enums: ['false'], valueType: 'boolean' } as Typeswag.EnumerateType;
-                case ts.SyntaxKind.NumericLiteral: return { dataType: 'enum', enums: [Number(literal.text)], valueType: 'number' } as Typeswag.EnumerateType;
-                default: return { dataType: 'enum', enums: [literal.text] } as Typeswag.EnumerateType;
+                case ts.SyntaxKind.TrueKeyword:
+                    return {
+                        dataType: 'enum',
+                        enums: ['true'],
+                        valueType: 'boolean',
+                    } as Typeswag.EnumerateType;
+                case ts.SyntaxKind.FalseKeyword:
+                    return {
+                        dataType: 'enum',
+                        enums: ['false'],
+                        valueType: 'boolean',
+                    } as Typeswag.EnumerateType;
+                case ts.SyntaxKind.NumericLiteral:
+                    return {
+                        dataType: 'enum',
+                        enums: [Number(literal.text)],
+                        valueType: 'number',
+                    } as Typeswag.EnumerateType;
+                default:
+                    return {
+                        dataType: 'enum',
+                        enums: [literal.text],
+                    } as Typeswag.EnumerateType;
             }
         }
 

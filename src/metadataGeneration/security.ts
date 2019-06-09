@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { getInitializerValue } from './initializer-value';
+import { getInitializerValue } from './initializerValue';
 import { Typeswag } from './typeswag';
 
 export function getSecurities(decorators: ts.Identifier[]): Typeswag.Security[] {

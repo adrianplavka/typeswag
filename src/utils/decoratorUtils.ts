@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { getInitializerValue } from '../metadataGeneration/initializer-value';
+import { getInitializerValue } from '../metadataGeneration/initializerValue';
 
 export function getDecorators(node: ts.Node, isMatching: (identifier: ts.Identifier) => boolean) {
     const decorators = node.decorators;
