@@ -1,4 +1,5 @@
 import { SwaggerConfig } from './../../src/config';
+
 export function getDefaultOptions(): SwaggerConfig {
     return {
         basePath: '/',
@@ -7,7 +8,9 @@ export function getDefaultOptions(): SwaggerConfig {
         host: 'localhost:3000',
         license: 'MIT',
         name: 'Test API',
-        outputDirectory: '',
+        output: {
+            path: '.',
+        },
         version: '1.0.0',
     };
 }

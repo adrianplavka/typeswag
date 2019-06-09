@@ -2,7 +2,7 @@ import {
     Get, Route,
 } from '../../../src';
 import { TestModel } from '../../fixtures/testModel';
-import { NonFactoryDecorator } from '../custom/non-factory-decorator';
+import { NonFactoryDecorator } from '../custom/nonFactoryDecorator';
 import { ModelService } from '../services/modelService';
 
 @Route('Controller')
