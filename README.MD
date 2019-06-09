@@ -72,7 +72,7 @@ Note, that the examples provided are done with [routing-controllers](https://git
 
 ### Create Configuration
 
-```typescript
+```ts
 // commands/swagger.ts
 
 import * as pkg from '../package.json';
@@ -99,7 +99,7 @@ swagger.generate({
 
 ### Create Entry File
 
-```typescript
+```ts
 // src/api/controllers/index.ts
 
 // These imports will be crawled by the metadata generator.
@@ -110,7 +110,7 @@ import "./PetController";
 
 ### Create Controllers
 
-```typescript
+```ts
 // src/api/controllers/UserController.ts
 
 import { JsonController, Get, Post, Body } from 'routing-controllers';
@@ -155,7 +155,7 @@ export class UserController {
 ```
 
 ### Create Models
-```typescript
+```ts
 // models/user.ts
 
 /** 
@@ -207,7 +207,7 @@ Note that type aliases are only supported for string literal types like `type st
 ### Dealing with duplicate model names
 If you have multiple models with the same name, you may get errors indicating that there are multiple matching models. If you'd like to designate a class/interface as the 'canonical' version of a model, add a jsDoc element marking it as such:
 
-```typescript
+```ts
 /**
  * @typeswagModel
  */
@@ -220,8 +220,8 @@ export interface MyModel {
 
 If you have a project that needs a description and/or external docs for tags, you can configure the internal generators to use the correct tags definitions and external docs by providing a tags property to swagger property in configuration.
 
-```javascript
-// commands/swagger.js
+```ts
+// commands/swagger.ts
 
 const swagger = new SwaggerGenerator();
 swagger.generate({
