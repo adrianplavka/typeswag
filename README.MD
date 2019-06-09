@@ -142,8 +142,10 @@ export class UserController {
         return await new UserService().get(id);
     }
 
-    // To provide more hints to the Swagger generator, we can mix typeswag's
-    // decorators with custom decorators.
+    /**
+     * To provide more hints to the Swagger generator, we can mix typeswag's
+     * decorators with custom decorators.
+     */
     @SuccessResponse('201', 'Created')
     @Post()
     public async createUser(@Body() user: UserCreationRequest): Promise<void> {
