@@ -144,6 +144,17 @@ export class TypeResolver {
                 return new TypeResolver(typeReference.typeArguments[0], this.current).resolve();
             }
 
+            if (typeReference.typeName.text === 'Partial' && typeReference.typeArguments && typeReference.typeArguments.length === 1) {
+                const partialType = new TypeResolver(typeReference.typeArguments[0], this.current).resolve() as Typeswag.ReferenceType;
+                if (partialType.properties) {
+                    for (const property of partialType.properties) {
+                        property.required = false;
+                    }
+                }
+                partialType.refName = `Partial${partialType.refName}`;
+                return partialType;
+            }
+
             if (typeReference.typeName.text === 'String') {
                 return { dataType: 'string' } as Typeswag.Type;
             }
