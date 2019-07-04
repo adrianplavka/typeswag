@@ -145,13 +145,15 @@ export class TypeResolver {
             }
 
             if (typeReference.typeName.text === 'Partial' && typeReference.typeArguments && typeReference.typeArguments.length === 1) {
-                const partialType = new TypeResolver(typeReference.typeArguments[0], this.current).resolve() as Typeswag.ReferenceType;
+                const partialType = Object.assign({}, new TypeResolver(typeReference.typeArguments[0], this.current).resolve() as Typeswag.ReferenceType);
                 if (partialType.properties) {
+                    partialType.properties = partialType.properties.map(p => Object.assign({}, p));
                     for (const property of partialType.properties) {
                         property.required = false;
                     }
                 }
                 partialType.refName = `Partial${partialType.refName}`;
+                this.current.AddReferenceType(partialType);
                 return partialType;
             }
 
