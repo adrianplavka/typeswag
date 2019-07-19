@@ -256,18 +256,45 @@ export class TypeResolver {
                 }
                 return initializer.text;
             }
+            // No initializer value has been found, we should fallback to number indeces.
             return;
         }
 
+        function getEnumValueType(member: any): 'string' | 'number' {
+            const initializer = member.initializer;
+            if (initializer) {
+                switch (initializer.kind) {
+                    case ts.SyntaxKind.StringLiteral:
+                        return 'string';
+                    case ts.SyntaxKind.NumericLiteral:
+                        return 'number';
+                    default:
+                        return 'string';
+                }
+            }
+            // Default value for enums, that are without initializing value.
+            return 'number';
+        }
+
         if (extractEnum) {
-            const enums = enumDeclaration.members.map((member: any, index) => {
-                return getEnumValue(member) || String(index);
+            // We make an assumption about the type of enum from the first member.
+            const valueType = getEnumValueType((enumDeclaration.members[0]));
+
+            const enums = enumDeclaration.members.map((member, index) => {
+                const value = getEnumValue(member) || index;
+                switch (valueType) {
+                    case 'number':
+                        return Number(value);
+                    default:
+                        return value;
+                }
             });
             return {
                 dataType: 'refEnum',
                 description: this.getNodeDescription(enumDeclaration),
                 enums,
                 refName: enumName,
+                valueType,
             } as Typeswag.ReferenceType;
         } else {
             return {

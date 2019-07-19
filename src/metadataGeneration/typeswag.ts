@@ -90,6 +90,7 @@ export namespace Typeswag {
         properties?: Property[];
         additionalProperties?: Type;
         enums?: string[];
+        valueType?: 'string' | 'number';
         example?: any;
     }
 

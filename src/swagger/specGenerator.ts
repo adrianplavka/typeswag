@@ -72,7 +72,7 @@ export class SpecGenerator {
                 definitions[referenceType.refName] = {
                     description: referenceType.description,
                     enum: referenceType.enums,
-                    type: 'string',
+                    type: referenceType.valueType ? referenceType.valueType : 'string',
                 };
             }
         });
