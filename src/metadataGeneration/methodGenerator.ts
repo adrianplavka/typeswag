@@ -146,9 +146,9 @@ export class MethodGenerator {
         const decorators = this.getDecoratorsByIdentifier(this.node, 'SuccessResponse');
         if (!decorators || !decorators.length) {
             return {
-                description: type.dataType === 'void' ? 'No content' : 'Ok',
+                description: 'Ok',
                 examples: this.getMethodSuccessExamples(),
-                name: type.dataType === 'void' ? '204' : '200',
+                name: '200',
                 schema: type,
             };
         }

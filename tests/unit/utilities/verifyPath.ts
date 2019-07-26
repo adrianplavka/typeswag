@@ -20,8 +20,8 @@ export function VerifyPath(
     if (!operation.responses) { throw new Error(`Response object for ${route} route wasn\'t generated.`); }
 
     if (isNoContent) {
-        const successResponse = operation.responses['204'];
-        expect(successResponse, `204 response for ${route} route wasn\'t generated.`).to.exist;
+        const successResponse = operation.responses['200'];
+        expect(successResponse, `200 response for ${route} route wasn\'t generated.`).to.exist;
         return path;
     }
 
