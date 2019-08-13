@@ -329,6 +329,7 @@ export class SpecGenerator {
             long: { type: 'integer', format: 'int64' },
             never: { type: 'object' },
             object: { type: 'object' },
+            stream: { type: 'string', format: 'byte' },
             string: { type: 'string' },
             unknown: { type: 'object' },
         } as { [name: string]: Swagger.Schema };

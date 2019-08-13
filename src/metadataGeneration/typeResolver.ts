@@ -133,6 +133,10 @@ export class TypeResolver {
                 return { dataType: 'buffer' } as Typeswag.Type;
             }
 
+            if (typeReference.typeName.text === 'ReadableStream') {
+                return { dataType: 'stream' } as Typeswag.Type;
+            }
+
             if (typeReference.typeName.text === 'Array' && typeReference.typeArguments && typeReference.typeArguments.length === 1) {
                 return {
                     dataType: 'array',

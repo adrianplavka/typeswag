@@ -69,7 +69,7 @@ export namespace Typeswag {
     }
 
     export interface Type {
-        dataType: 'string' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'void' | 'object' | 'any' | 'refEnum' | 'refObject';
+        dataType: 'string' | 'double' | 'float' | 'integer' | 'long' | 'enum' | 'array' | 'datetime' | 'date' | 'buffer' | 'stream' | 'void' | 'object' | 'any' | 'refEnum' | 'refObject';
     }
 
     export interface EnumerateType extends Type {
