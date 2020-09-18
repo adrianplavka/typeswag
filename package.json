@@ -39,7 +39,7 @@
     "moment": "^2.24.0",
     "typescript": "^3.5.1",
     "typescript-formatter": "^7.2.2",
-    "validator": "^11.0.0",
+    "validator": "^13.1.17",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
