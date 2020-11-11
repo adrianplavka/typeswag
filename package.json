@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/minimatch": "^3.0.3",
-    "@types/mocha": "^2.2.48",
+    "@types/mocha": "^8.0.4",
     "@types/node": "^10.11.5",
     "@types/validator": "^10.11.1",
     "@types/yamljs": "^0.2.30",
