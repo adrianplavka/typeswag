@@ -34,7 +34,7 @@
   "author": "Adrian Plavka <adrian.plavka@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "merge": "^1.2.1",
+    "merge": "^2.1.1",
     "minimatch": "^3.0.4",
     "moment": "^2.24.0",
     "typescript": "^3.5.1",
